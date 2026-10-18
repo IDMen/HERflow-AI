@@ -1,0 +1,13 @@
+const base = 'http://127.0.0.1:3000/api';
+const login = await fetch(`${base}/auth/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: 'demo@herflow.local', password: 'DemoPassword123!' }) });
+if (!login.ok) throw new Error(`Demo login failed: ${login.status}`);
+const token = (await login.json()).data.token;
+const headers = { Authorization: `Bearer ${token}` };
+const projectsResponse = await fetch(`${base}/projects`, { headers });
+if (!projectsResponse.ok) throw new Error(`Project list failed: ${projectsResponse.status}`);
+const projects = (await projectsResponse.json()).data.items;
+if (!projects.length) throw new Error('No demo projects found');
+const response = await fetch(`${base}/projects/${projects[0]._id}/breakdown`, { method: 'POST', headers });
+const body = await response.json();
+if (!response.ok) throw new Error(`Breakdown failed: ${response.status} ${body.error || ''}`);
+console.log(JSON.stringify({ source: body.data.source, milestones: body.data.milestones?.length || 0, tasks: body.data.milestones?.reduce((n, m) => n + m.tasks.length, 0) || 0 }));

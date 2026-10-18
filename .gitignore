@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.angular/
+.env
+.venv/
+__pycache__/
+*.pyc
+coverage/
+.data/
+.cache/
